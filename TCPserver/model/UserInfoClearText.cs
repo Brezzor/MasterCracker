@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace TCPserver.model
+namespace MasterCracker.model
 {
     /// <summary>
     /// Username + password in clear text (that is human readable)

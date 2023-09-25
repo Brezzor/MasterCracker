@@ -4,9 +4,9 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
-using TCPserver.model;
+using MasterCracker.model;
 
-namespace TCPserver.util
+namespace MasterCracker.handlers
 {
     internal class PasswordFileHandler
     {
@@ -17,7 +17,7 @@ namespace TCPserver.util
         /// </summary>
         /// <param name="filename">the name of the password file</param>
         /// <returns>A list of (username, encrypted password) pairs</returns>
-        public static List<UserInfo> ReadPasswordFile(String filename)
+        public static List<UserInfo> ReadPasswordFile(string filename)
         {
             List<UserInfo> result = new List<UserInfo>();
 

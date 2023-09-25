@@ -1,14 +1,18 @@
-﻿using System.Net;
+﻿using MasterCracker.model;
+using MasterCracker.repos;
+using System.Net;
 using System.Net.Sockets;
 using System.Text;
 
-namespace TCPserver
+namespace MasterCracker
 {
     internal class Program
     {
         static void Main(string[] args)
         {
-            Master.Start();
+            UserInfosRepo.Initialize();
+            ChunksRepo.Initialize();
+            Server.StartServer();
             Console.ReadKey();
         }
     }

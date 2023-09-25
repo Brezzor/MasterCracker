@@ -5,17 +5,20 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace TCPserver.util
+namespace MasterCracker.handlers
 {
-    internal class ServerHandlers
+    internal class ClientHandler
     {
         static bool keepRunning = true;
-        public static void HandleClient(TcpClient client)
-        {
+        static NetworkStream ns;
+        static StreamReader sr;
+        static StreamWriter sw;
 
-            NetworkStream ns = client.GetStream();
-            StreamReader sr = new StreamReader(ns);
-            StreamWriter sw = new StreamWriter(ns)
+        public static async Task HandleClient(TcpClient client)
+        {
+            ns = client.GetStream();
+            sr = new StreamReader(ns);
+            sw = new StreamWriter(ns)
             {
                 AutoFlush = true
             };
@@ -24,7 +27,7 @@ namespace TCPserver.util
             {
                 try
                 {
-                    HandleClientRequest(sr, sw);
+                    await HandleClientRequest();
                 }
                 catch (Exception ex)
                 {
@@ -35,18 +38,25 @@ namespace TCPserver.util
             ns.Close();
         }
 
-        static void HandleClientRequest(StreamReader streamReader, StreamWriter streamWriter)
+        static async Task HandleClientRequest()
         {
-            var request = streamReader.ReadLine();
+            var request = await sr.ReadLineAsync();
 
             switch (request)
             {
                 case "New password":
-                    Console.WriteLine("do something");
+                    sw.WriteLine();
                     break;
+
+                case "New chunk":
+                    sw.WriteLine();
+                    break;
+
                 default:
                     break;
             }
         }
+
+
     }
 }

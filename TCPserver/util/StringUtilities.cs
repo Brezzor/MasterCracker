@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Text;
 
-namespace TCPserver.util
+namespace MasterCracker.util
 {
     internal class StringUtilities
     {
