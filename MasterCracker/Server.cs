@@ -39,17 +39,33 @@ namespace MasterCracker
 
         private static async Task RunClientAsync(TcpClient tcpClient)
         {
-            Console.WriteLine($"{tcpClient.Client.RemoteEndPoint}: connected!");
-            
+            bool _clientRunning = true;
+            EndPoint? _remoteEndPoint = tcpClient.Client.RemoteEndPoint;
+
+            Console.WriteLine($"{_remoteEndPoint}: connected!");
+
             Stream stream = tcpClient.GetStream();
             StreamReader streamReader = new StreamReader(stream);
-            StreamWriter streamWriter = new StreamWriter(stream);
+            StreamWriter streamWriter = new StreamWriter(stream) 
+            { AutoFlush = true };
 
-            while (_keepRunnning)
+            while (_clientRunning)
             {
-                var message = await streamReader.ReadLineAsync();
-                Console.WriteLine(message);
-                await streamWriter.WriteLineAsync(message);
+                try
+                {
+                    string? message = await streamReader.ReadLineAsync();
+                    if (message != "" && message != null)
+                    {
+                        Console.WriteLine($"{_remoteEndPoint}{message}");
+                    }
+                    await streamWriter.WriteLineAsync($"Sent: {message}");
+                }
+                catch (IOException)
+                {
+                    Console.WriteLine($"{_remoteEndPoint}: Disconnected!");
+                    _clientRunning = false;
+                    stream.Close();
+                }
             }
         }
     }
