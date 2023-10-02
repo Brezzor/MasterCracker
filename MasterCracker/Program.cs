@@ -12,7 +12,8 @@ namespace MasterCracker
         {
             UserInfosRepo.Initialize();
             ChunksRepo.Initialize();
-            Server.StartServerAsync().Wait();
+            Server server = new Server();
+            server.StartServerAsync().Wait();
             Console.ReadKey();
         }
     }

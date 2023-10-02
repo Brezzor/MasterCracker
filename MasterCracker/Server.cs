@@ -12,10 +12,10 @@ namespace MasterCracker
 {
     internal class Server
     {
-        private static List<Task> Tasks = new List<Task>();
-        private static bool _keepRunnning = true;
+        private List<Task> _clients = new List<Task>();
+        private bool _keepRunnning = true;
 
-        public static async Task StartServerAsync()
+        public async Task StartServerAsync()
         {
             Console.WriteLine("Starting server...");
 
@@ -26,47 +26,52 @@ namespace MasterCracker
             await ListenForClientsAsync(tcpListener);
         }
 
-        private static async Task ListenForClientsAsync(TcpListener tcpListener)
-        {            
+        private async Task ListenForClientsAsync(TcpListener tcpListener)
+        {
             Console.WriteLine("Listening for clients");
 
             while (_keepRunnning)
             {
+                NumberOfClients();
                 TcpClient client = await tcpListener.AcceptTcpClientAsync();
-                Tasks.Add(Task.Run(() => RunClientAsync(client)));
+                _clients.Add(Task.Run(() => RunClientAsync(client)));
+                _clients.RemoveAll(task => task.IsCompleted);
             }
         }
 
-        private static async Task RunClientAsync(TcpClient tcpClient)
+        private async Task RunClientAsync(TcpClient tcpClient)
         {
-            bool _clientRunning = true;
             EndPoint? _remoteEndPoint = tcpClient.Client.RemoteEndPoint;
 
             Console.WriteLine($"{_remoteEndPoint}: connected!");
 
             Stream stream = tcpClient.GetStream();
             StreamReader streamReader = new StreamReader(stream);
-            StreamWriter streamWriter = new StreamWriter(stream) 
+            StreamWriter streamWriter = new StreamWriter(stream)
             { AutoFlush = true };
 
-            while (_clientRunning)
+            while (tcpClient.Connected)
             {
                 try
                 {
                     string? message = await streamReader.ReadLineAsync();
                     if (message != "" && message != null)
                     {
-                        Console.WriteLine($"{_remoteEndPoint}{message}");
+                        Console.WriteLine($"{_remoteEndPoint}: {message}");
                     }
                     await streamWriter.WriteLineAsync($"Sent: {message}");
                 }
                 catch (IOException)
                 {
                     Console.WriteLine($"{_remoteEndPoint}: Disconnected!");
-                    _clientRunning = false;
-                    stream.Close();
+                    tcpClient.Close();
                 }
             }
+        }
+
+        private void NumberOfClients()
+        {
+            Console.WriteLine($"Number of clients: {_clients.Count}");
         }
     }
 }
